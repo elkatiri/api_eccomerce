@@ -9,7 +9,7 @@ class OrderController extends Controller
 {
     public function index()
     {
-        return Order::with(['product', 'orderDetails'])->get();
+        return Order::with(['product', 'orderDetail'])->get();
     }
 
     public function store(Request $request)

@@ -9,8 +9,14 @@ class Customer extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'email', 'phone'];
+    protected $fillable = ['name', 'email', 'phone', 'password'];
 
+    protected $hidden = ['password'];
+
+    public function orders()
+    {
+        return $this->belongsToMany(Order::class, 'order_details');
+    }
     public function orderDetails()
     {
         return $this->hasMany(OrderDetail::class);

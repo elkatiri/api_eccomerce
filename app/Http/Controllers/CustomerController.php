@@ -9,7 +9,7 @@ class CustomerController extends Controller
 {
     public function index()
     {
-        $customers=Customer::with('orderDetails')->get();
+        $customers=Customer::with('orders','orderDetails',)->get();
         return response()->json($customers);
     }
 
