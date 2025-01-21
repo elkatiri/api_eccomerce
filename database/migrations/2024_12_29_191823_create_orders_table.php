@@ -12,12 +12,12 @@ return new class extends Migration
     public function up(): void
     {
     Schema::create('orders', function (Blueprint $table) {
-        $table->id();
-        $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
-        $table->integer('quantity');
-        $table->timestamp('order_date')->nullable();
-        $table->enum('delivery_status', ['pending', 'shipped', 'delivered'])->default('pending');
-        $table->timestamps();
+    $table->id();
+    $table->foreignId('customer_id')->constrained()->onDelete('cascade'); // Relation avec un client
+    $table->timestamp('order_date')->nullable();
+    $table->enum('delivery_status', ['pending', 'shipped', 'delivered'])->default('pending'); // Statut de livraison
+    $table->decimal('total_price', 10, 2)->nullable(); // Total de la commande
+    $table->timestamps();
     });
     }
 

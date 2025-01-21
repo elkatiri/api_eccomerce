@@ -9,11 +9,12 @@ Route::get('/user', function (Request $request) {
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\OrderController;
-use App\Http\Controllers\OrderDetailController;
-
-Route::apiResources([
-    'products' => ProductController::class,
-    'customers' => CustomerController::class,
-    'orders' => OrderController::class,
-    'order-details' => OrderDetailController::class,
-]);
+use App\Http\Controllers\UserController;
+Route::apiResource('products', ProductController::class)->middleware('auth:sanctum');
+Route::apiResource('customers', CustomerController::class)->middleware('auth:sanctum');
+Route::apiResource('orders', OrderController::class)->middleware('auth:sanctum');
+Route::get('/orders/shipped-count', [OrderController::class, 'shippedCount']);
+Route::get('/orders/pending-count', [OrderController::class, 'pendingCount']);
+Route::post('/register', [UserController::class, 'register']);
+Route::post('/login', [UserController::class, 'login']);
+Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:sanctum');

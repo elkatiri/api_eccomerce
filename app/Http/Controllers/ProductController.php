@@ -1,38 +1,89 @@
 <?php
-
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Storage;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
+    // Display all products
     public function index()
     {
-        $products=Product::with("orders")->get();
-        return response()->json($products);
+        return response()->json(Product::with('orders')->get(), 200);
     }
 
+    // Create a new product
     public function store(Request $request)
     {
-        $product = Product::create($request->all());
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'price' => 'required|numeric|min:0',
+            'quantity' => 'required|integer|min:0',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+        ]);
+
+        $product = Product::create($validated);
+
+        if ($request->hasFile('image')) {
+            $product->image = $request->file('image')->store('products', 'public');
+            $product->save();
+        }
+
         return response()->json($product, 201);
     }
 
+    // Show a specific product
     public function show(Product $product)
     {
-        return $product;
+        return response()->json($product, 200);
     }
 
-    public function update(Request $request, Product $product)
+    // Update an existing product
+public function update(Request $request, Product $product)
+{
+    try {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'price' => 'required|numeric|min:0',
+            'quantity' => 'required|integer|min:0',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+        ]);
+
+        $product->update($validated);
+
+        if ($request->hasFile('image')) {
+            $this->updateProductImage($product, $request);
+        }
+
+        return response()->json($product, 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Error updating product',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+}
+
+    private function updateProductImage(Product $product, Request $request)
     {
-        $product->update($request->all());
-        return response()->json($product);
+        if ($product->image && Storage::exists('public/' . $product->image)) {
+            Storage::delete('public/' . $product->image);
+        }
+
+        $product->image = $request->file('image')->store('products', 'public');
+        $product->save();
     }
 
+    // Delete a product
     public function destroy(Product $product)
     {
+        if ($product->image && Storage::exists('public/' . $product->image)) {
+            Storage::delete('public/' . $product->image);
+        }
+
         $product->delete();
-        return response()->json(['message' => 'Product deleted successfully']);
+        return response()->json(['message' => 'Product deleted successfully'], 200);
     }
 }

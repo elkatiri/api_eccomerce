@@ -9,19 +9,51 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['product_id', 'quantity', 'order_date', 'delivery_status'];
-    public function customers()
+    protected $fillable = [
+        'customer_id',
+        'order_date',
+        'delivery_status',
+        'total_price',
+    ];
+
+    protected $casts = [
+        'order_date' => 'datetime',
+    ];
+
+    // Relation avec Customer (un client peut avoir plusieurs commandes)
+    public function customer()
     {
-        return $this->belongsToMany(Customer::class, 'order_details');
+        return $this->belongsTo(Customer::class);
     }
 
-    public function product()
+        // Relation avec Product (une commande peut avoir plusieurs produits)
+    public function products()
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsToMany(Product::class, 'order_product')
+                    ->withPivot('quantity', 'price')  // Additional fields in the pivot table
+                    ->withTimestamps();
     }
 
-    public function orderDetail()
+
+    // Calcul du prix total de la commande
+    public function calculateTotalPrice()
     {
-        return $this->hasOne(OrderDetail::class);
+        $total = 0;
+
+        foreach ($this->products as $product) {
+            $total += $product->pivot->price * $product->pivot->quantity;
+        }
+
+        return $total;
+    }
+
+    // Sauvegarde automatique du prix total lors de la création ou mise à jour de la commande
+    public static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($order) {
+            $order->total_price = $order->calculateTotalPrice();
+        });
     }
 }
