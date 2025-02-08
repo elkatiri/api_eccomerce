@@ -8,6 +8,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\UserController;
 Route::apiResource('products', ProductController::class);
@@ -21,3 +22,5 @@ Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:sanc
 Route::get('/limitedProducts', [ProductController::class, 'limitedProducts']);
 Route::get('/filterByPrice', [ProductController::class, 'filteredProductsByPrice']);
 Route::get('/filterByTime', [ProductController::class, 'filteredProductsByTime']);
+
+Route::apiResource('messages', MessageController::class);
