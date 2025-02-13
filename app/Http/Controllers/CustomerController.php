@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\Validator;
 class CustomerController extends Controller
 {
 
+    public function findId(Request $request)
+    {
+        $id = Customer::where('email', $request->email)->value('id');
+        return response()->json(['id' => $id]);
+    }
 
 
     // Display all customers
@@ -24,7 +29,7 @@ class CustomerController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:customers,email',
             'phone' => 'nullable|string|max:15',
-            'password' => 'required|string|min:8',
+            'password' => 'nullable|string|min:8',
         ]);
 
         if ($validator->fails()) {

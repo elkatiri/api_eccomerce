@@ -51,4 +51,7 @@ public function register(Request $request)
     return response()->json(['message' => 'Logged out successfully'], 200);
 }
 
+
+
+
 }
