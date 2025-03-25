@@ -12,6 +12,7 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\UserController;
 Route::apiResource('products', ProductController::class);
+Route::apiResource('products', ProductController::class);
 Route::apiResource('customers', CustomerController::class);
 Route::apiResource('orders', OrderController::class);   
 Route::get('/orders/shipped-count', [OrderController::class, 'shippedCount']);
@@ -23,3 +24,14 @@ Route::get('/limitedProducts', [ProductController::class, 'limitedProducts']);
 Route::get('/filterByPrice', [ProductController::class, 'filteredProductsByPrice']);
 Route::get('/filterByTime', [ProductController::class, 'filteredProductsByTime']);
 Route::apiResource('messages', MessageController::class);
+/*route for analitics */
+Route::get('/sales-by-month-and-day', [OrderController::class, 'salesByMonthAndDay']);
+
+// Route for getting total revenue
+Route::get('/total-revenue', [OrderController::class, 'totalRevenue']);
+
+// Route for getting total sales by product
+Route::get('/total-sales-by-product', [OrderController::class, 'totalSalesByProduct']);
+
+// Route for getting orders by status
+Route::get('/orders-by-status', [OrderController::class, 'ordersByStatus']);

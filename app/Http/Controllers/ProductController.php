@@ -6,7 +6,18 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
-{
+{ 
+    public function topSellingProducts()
+    {
+        $topSellingProducts = Product::withCount(['orders as total_quantity' => function($query) {
+            $query->selectRaw('SUM(quantity)');
+        }])
+        ->orderBy('total_quantity', 'desc')
+        ->get();
+
+        return response()->json($topSellingProducts, 200);
+    }
+
     public function limitedProducts(){
         $products = Product::limit(8)->get();
         return response()->json($products, 200);

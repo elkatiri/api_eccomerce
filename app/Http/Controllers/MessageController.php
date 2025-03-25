@@ -8,8 +8,9 @@ class MessageController extends Controller
 {
     public function index()
     {
-        return response()->json(Message::all(), 200);
+        return response()->json(Message::latest()->get(), 200);
     }
+
 
     public function store(Request $request)
     {
